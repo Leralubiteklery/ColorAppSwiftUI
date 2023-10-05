@@ -8,31 +8,41 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var redSliderValue = Double.random(in: 0...255)
-    @State private var greenSliderValue = Double.random(in: 0...255)
-    @State private var blueSliderValue = Double.random(in: 0...255)
+    @State private var red = Double.random(in: 0...255).rounded()
+    @State private var green = Double.random(in: 0...255).rounded()
+    @State private var blue = Double.random(in: 0...255).rounded()
+    
+    @FocusState private var isInputActive: Bool
     
     var body: some View {
-        ZStack(alignment: .top) {
-                Color.indigo
-                    .ignoresSafeArea()
-            VStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.gray)
-                    .frame(width: 350, height: 170)
-                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white, lineWidth: 4))
-                    .padding()
-                ColorSliderView(value: $redSliderValue, sliderColor: .red)
-                ColorSliderView(value: $greenSliderValue, sliderColor: .green)
-                ColorSliderView(value: $blueSliderValue, sliderColor: .blue)
+        ZStack() {
+            Color.indigo
+                .ignoresSafeArea()
+                .onTapGesture {
+                    isInputActive = false
+                }
+            VStack (spacing: 40){
+                ColorView(red: red, green: green, blue: blue)
+                VStack {
+                    ColorSliderView(value: $red, color: .red)
+                    ColorSliderView(value: $green, color: .green)
+                    ColorSliderView(value: $blue, color: .blue)
+                }
+                .frame(height: 150)
+                .focused($isInputActive)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            isInputActive = false
+                        }
+                    }
+                }
+                Spacer()
             }
             .padding()
-            
         }
-        
- 
     }
-
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -41,15 +51,5 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-struct ColorSliderView: View {
-    @Binding var value: Double
-    let sliderColor: Color
-    
-    var body: some View {
-        HStack{
-            Text("\(lround(value))")
-            Slider(value: $value, in: 0...255, step: 1)
-                .accentColor(sliderColor)
-        }
-    }
-}
+
+
